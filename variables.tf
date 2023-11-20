@@ -13,6 +13,6 @@ variable "value" {
   default = null
 }
 
-variable "object_file_extension" {
-  default = ".json"
+variable "kubernetes_manifest_namespace" {
+  default = "default"
 }

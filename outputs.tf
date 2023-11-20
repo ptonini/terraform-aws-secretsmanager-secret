@@ -7,21 +7,22 @@ output "policy_arns" {
 }
 
 output "kubernetes_secret_provider_class_manifest" {
-  value = yamlencode({
+  value = {
     apiVersion = "secrets-store.csi.x-k8s.io/v1"
     kind       = "SecretProviderClass"
     metadata = {
-      name = var.name
+      name      = aws_secretsmanager_secret.this.name
+      namespace = var.kubernetes_manifest_namespace
     }
     spec = {
       provider = "aws"
       parameters = {
-        region  = data.aws_region.current.name
-        objects = <<-EOF
-          - object_name: ${aws_secretsmanager_secret.this.arn}
-            object_alias: ${var.name}${var.object_file_extension}
-        EOF
+        region = data.aws_region.current.name
+        objects = yamlencode([{
+          objectName = aws_secretsmanager_secret.this.name
+          objectType = "secretsmanager"
+        }])
       }
     }
-  })
+  }
 }
